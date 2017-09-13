@@ -16,6 +16,11 @@ class VMenu : public VList {
 public:
     explicit VMenu(Window& win) : VList{win} {
         set_focusable(true);
+        on_release.add([this]() {
+            for(auto& pair : this->m_option_menu_map) {
+                pair.second->set_shown(false);
+            }
+        });
     }
 
     Button& new_option(std::string const& label) {
@@ -24,12 +29,12 @@ public:
         btn.width = [this]()->int {
             return this->m_max_width;
         };
-        m_option_map.insert(std::make_pair(label, &btn));
+        m_option_btn_map.emplace(std::make_pair(label, &btn));
         return btn;
     }
 
     void attach_menu(std::string const& label, VMenu& menu) {
-        Button& btn = *m_option_map.at(label);
+        Button& btn = *m_option_btn_map.at(label);
 
         menu.set_shown(false);
         menu.x = [&btn]()->int {
@@ -39,6 +44,7 @@ public:
             return btn.y();
         };
         add_child(menu);
+        m_option_menu_map.emplace(std::make_pair(label, &menu));
 
         btn.on_mouse_down.add([this, label](int, int, int) {
             this->toggle(label);
@@ -46,15 +52,16 @@ public:
     }
 
     void toggle(std::string const& label) {
-//        for(auto& pair : m_option_map) {
-//            pair.second->set_shown(false);
-//        }
-        Button& btn = *m_option_map.at(label);
-        btn.set_shown(true);
+        for(auto& pair : m_option_menu_map) {
+            pair.second->set_shown(false);
+        }
+        VMenu& menu = *m_option_menu_map.at(label);
+        menu.set_shown(true);
     }
 
 private:
-    std::map<std::string, Button*> m_option_map;
+    std::map<std::string, Button*> m_option_btn_map;
+    std::map<std::string, VMenu*> m_option_menu_map;
 };
 
 int main() {
@@ -75,8 +82,13 @@ int main() {
 
     auto& menu2 = window.create<VMenu>();
     menu2.new_option("Hello!");
-    menu2.new_option("Success!");
+    menu2.new_option("Merhaba!");
 
+    auto& menu3 = window.create<VMenu>();
+    menu3.new_option("Goodbye!");
+    menu3.new_option("Hoşçakal!");
+
+    menu2.attach_menu("Merhaba!", menu3);
     menu.attach_menu("New", menu2);
 
     bool close = false;

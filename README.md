@@ -1,2 +1,2 @@
 # Citrus
-GUI Library
+GUI Library written in C++.

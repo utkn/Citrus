@@ -11,6 +11,7 @@
 #include <vector>
 #include "../Listeners/Listener.h"
 #include "../Misc/Relation.h"
+#include "../Misc/Slot.h"
 
 class Window;
 class Form {
@@ -36,6 +37,9 @@ public:
     Relation y;
     Relation width;
     Relation height;
+
+    Slot<> on_focus;
+    Slot<> on_release;
 
     friend class Window;
 protected:
