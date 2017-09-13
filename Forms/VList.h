@@ -14,7 +14,8 @@ public:
 
     void add_element(Form& form);
 
-private:
+protected:
+    std::vector<Form*> m_elements;
     Form& m_first;
     int m_max_width = 0;
 };

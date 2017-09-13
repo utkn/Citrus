@@ -15,6 +15,7 @@ public:
     void add_element(Form& form);
 
 private:
+    std::vector<Form*> m_elements;
     Form& m_first;
     int m_max_height = 0;
 };

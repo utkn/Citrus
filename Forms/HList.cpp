@@ -16,7 +16,7 @@ HList::HList(Window &window) : Form{window}, m_first{m_window.create<Form>()} {
     height = [this]()->int { return this->m_max_height; };
     width = [this]()->int {
         int acc = 0;
-        for(auto& child : this->m_children) {
+        for(auto& child : this->m_elements) {
             acc += child->width();
         }
         return acc;
@@ -26,7 +26,7 @@ HList::HList(Window &window) : Form{window}, m_first{m_window.create<Form>()} {
 void HList::add_element(Form &form) {
     m_max_height = std::max(m_max_height, form.height());
 
-    Form* last = m_children.back();
+    Form* last = m_elements.back();
     form.x = [last]()->int {
         return last->x() + last->width();
     };
@@ -34,5 +34,6 @@ void HList::add_element(Form &form) {
         return last->y();
     };
 
+    m_elements.emplace_back(&form);
     add_child(form);
 }

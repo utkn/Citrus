@@ -12,21 +12,13 @@ class Relation {
 public:
     using Function = std::function<int()>;
 
-    Relation() {
-        m_function = []() -> int { return 0; };
-    }
+    Relation();
 
-    Relation(Relation&& move) noexcept : m_function{std::move(move.m_function)} {
-    }
+    Relation(Relation&& move) noexcept;
 
-    Relation& operator=(Function&& function) {
-        m_function = std::move(function);
-        return *this;
-    }
+    Relation& operator=(Function&& function);
 
-    int operator()() const {
-        return m_function();
-    }
+    int operator()() const;
 private:
     Function m_function;
 };

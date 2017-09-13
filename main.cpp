@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <map>
 #include "Forms/Form.h"
 #include "Window.h"
 #include "Forms/HList.h"
@@ -8,22 +9,53 @@
 #include "Forms/Label.h"
 #include "Forms/Button.h"
 #include "Forms/Textbox.h"
+#include "Forms/Box.h"
 
 
-class Filler : public Form {
+class VMenu : public VList {
 public:
-    Filler(Window& win, int f_width, int f_height) : Form{win} {
+    explicit VMenu(Window& win) : VList{win} {
         set_focusable(true);
-        width = [f_width]()->int {
-            return f_width;
-        };
-        height = [f_height]()->int {
-            return f_height;
-        };
     }
+
+    Button& new_option(std::string const& label) {
+        Button& btn = m_window.create<Button>(std::string{label}, 16);
+        add_element(btn);
+        btn.width = [this]()->int {
+            return this->m_max_width;
+        };
+        m_option_map.insert(std::make_pair(label, &btn));
+        return btn;
+    }
+
+    void attach_menu(std::string const& label, VMenu& menu) {
+        Button& btn = *m_option_map.at(label);
+
+        menu.set_shown(false);
+        menu.x = [&btn]()->int {
+            return btn.x() + btn.width();
+        };
+        menu.y = [&btn]()->int {
+            return btn.y();
+        };
+        add_child(menu);
+
+        btn.on_mouse_down.add([this, label](int, int, int) {
+            this->toggle(label);
+        });
+    }
+
+    void toggle(std::string const& label) {
+//        for(auto& pair : m_option_map) {
+//            pair.second->set_shown(false);
+//        }
+        Button& btn = *m_option_map.at(label);
+        btn.set_shown(true);
+    }
+
+private:
+    std::map<std::string, Button*> m_option_map;
 };
-
-
 
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -35,20 +67,17 @@ int main() {
     SDL_CreateWindowAndRenderer(640, 480, SDL_WINDOW_SHOWN, &win, &ren);
 
     Window window{640, 480};
-    auto& hl = window.create<HList>();
 
-    auto& f1 = window.create<Button>("SUBMIT!", 16);
-    auto& f2 = window.create<VList>();
-    auto& f3 = window.create<Filler>(255, 255);
+    auto& menu = window.create<VMenu>();
+    menu.new_option("New");
+    menu.new_option("Open");
+    menu.new_option("Save");
 
-    auto& f2l1 = window.create<Textbox>(16, 100);
-    auto& f2l2 = window.create<Label>("sup?!!", 12, SDL_Color{255, 255, 255});
-    f2.add_element(f2l1);
-    f2.add_element(f2l2);
+    auto& menu2 = window.create<VMenu>();
+    menu2.new_option("Hello!");
+    menu2.new_option("Success!");
 
-    hl.add_element(f3);
-    hl.add_element(f2);
-    hl.add_element(f1);
+    menu.attach_menu("New", menu2);
 
     bool close = false;
     while(!close) {

@@ -27,11 +27,10 @@ public:
 
     void set_focusable(bool focusable);
     void set_focus(bool focus);
+    void set_shown(bool shown);
 
-    bool inside(int check_x, int check_y) {
-        return check_x > x() && check_x < x() + width() &&
-                check_y > y() && check_y < y() + height();
-    }
+    bool inside(int check_x, int check_y) const;
+    bool shown() const;
 
     Relation x;
     Relation y;
@@ -40,8 +39,9 @@ public:
 
     friend class Window;
 protected:
+    bool m_shown = true;
     bool m_focusable = false;
-    bool m_focus = false;
+    bool m_focused = false;
 
     std::vector<Listener*> m_listeners;
     std::vector<Form*> m_children;

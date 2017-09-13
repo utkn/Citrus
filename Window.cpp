@@ -26,7 +26,7 @@ void Window::render(SDL_Renderer *renderer) {
         form->draw(renderer);
         if(m_debug) {
             SDL_Rect rect {form->x(), form->y(), form->width(), form->height()};
-            SDL_SetRenderDrawColor(renderer, 255, (form->m_focus) ? 255 : 0, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 255, (form->m_focused) ? 255 : 0, 0, 255);
             SDL_RenderDrawRect(renderer, &rect);
         }
     }

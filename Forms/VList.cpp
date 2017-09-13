@@ -10,12 +10,13 @@ VList::VList(Window &window) : Form{window}, m_first{m_window.create<Form>()} {
 
     m_first.x = [this]()->int { return this->x(); };
     m_first.y = [this]()->int { return this->y(); };
+    m_elements.emplace_back(&m_first);
     add_child(m_first);
 
     width = [this]()->int { return this->m_max_width; };
     height = [this]()->int {
         int acc = 0;
-        for(auto& child : this->m_children) {
+        for(auto& child : this->m_elements) {
             acc += child->height();
         }
         return acc;
@@ -25,7 +26,7 @@ VList::VList(Window &window) : Form{window}, m_first{m_window.create<Form>()} {
 void VList::add_element(Form &form) {
     m_max_width = std::max(m_max_width, form.width());
 
-    Form* last = m_children.back();
+    Form* last = m_elements.back();
     form.x = [last]()->int {
         return last->x();
     };
@@ -33,5 +34,6 @@ void VList::add_element(Form &form) {
         return last->y() + last->height();
     };
 
+    m_elements.emplace_back(&form);
     add_child(form);
 }

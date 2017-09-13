@@ -3,7 +3,7 @@
 //
 
 #include "Label.h"
-#include "../Global.h"
+#include "../Misc/Global.h"
 
 Label::Label(Window &win, std::string &&text, int font_size, SDL_Color color) : Form{win},
                                                                                 m_text{std::move(text)},

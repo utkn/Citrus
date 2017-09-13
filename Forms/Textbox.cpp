@@ -3,7 +3,7 @@
 //
 
 #include "Textbox.h"
-#include "../Global.h"
+#include "../Misc/Global.h"
 
 Textbox::Textbox(Window &win, int font_size, int box_width) : Form{win},
                                                               m_keyboard_listener{on_key_down, on_key_up, on_text_enter},
@@ -105,7 +105,7 @@ void Textbox::draw(SDL_Renderer *renderer) {
         TTF_SizeText(m_font, left_text.c_str(), &cursor_x, nullptr);
     }
     // If focused, copy the cursor and selection into main surface.
-    if(m_focus) {
+    if(m_focused) {
         // Copy the cursor.
         SDL_Rect cursor_rect{cursor_x, 1, 1, height() - 5};
         SDL_FillRect(main_surface, &cursor_rect, SDL_MapRGB(main_surface->format, 50, 50, 50));

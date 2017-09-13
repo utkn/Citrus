@@ -5,7 +5,7 @@
 #include "Form.h"
 
 void Form::set_focus(bool focus) {
-    m_focus = focus;
+    m_focused = focus;
 }
 
 void Form::set_focusable(bool focusable) {
@@ -13,6 +13,7 @@ void Form::set_focusable(bool focusable) {
 }
 
 void Form::collect(std::vector<Form *> &collection) {
+    if(!shown()) return;
     collection.emplace_back(this);
     for(auto& child : m_children) {
         child->collect(collection);
@@ -41,7 +42,20 @@ void Form::handle(SDL_Event &event) {
         listener->receive(event);
     }
     for(auto& child : m_children) {
-        if((child->m_focusable && child->m_focus) || !child->m_focusable)
+        if((child->m_focusable && child->m_focused) || !child->m_focusable)
             child->handle(event);
     }
+}
+
+bool Form::inside(int check_x, int check_y) const {
+    return check_x > x() && check_x < x() + width() &&
+           check_y > y() && check_y < y() + height();
+}
+
+void Form::set_shown(bool shown) {
+    m_shown = shown;
+}
+
+bool Form::shown() const {
+    return m_shown;
 }
